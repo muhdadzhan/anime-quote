@@ -4,10 +4,16 @@ import 'services/anime_quote_service.dart';
 import 'theme/app_theme.dart';
 import 'widgets/anime_logo.dart';
 import 'widgets/quote_card.dart';
-import 'widgets/search_bar_widget.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+//import 'widgets/search_bar_widget.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    debugPrint('Could not load .env: $e');
+  }
   runApp(const AnimeQuotesApp());
 }
 
@@ -24,8 +30,9 @@ class _AnimeQuotesAppState extends State<AnimeQuotesApp> {
 
   void _toggleTheme() {
     setState(() {
-      _themeMode =
-          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
     });
   }
 
@@ -37,10 +44,7 @@ class _AnimeQuotesAppState extends State<AnimeQuotesApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
-      home: HomePage(
-        onToggleTheme: _toggleTheme,
-        currentThemeMode: _themeMode,
-      ),
+      home: HomePage(onToggleTheme: _toggleTheme, currentThemeMode: _themeMode),
     );
   }
 }
@@ -147,7 +151,8 @@ class _HomePageState extends State<HomePage>
 
     try {
       final quote = await _quoteService.getRandomQuote(
-        anime: animeFilter ?? (_activeFilter == 'Random' ? null : _activeFilter),
+        anime:
+            animeFilter ?? (_activeFilter == 'Random' ? null : _activeFilter),
       );
       if (mounted) {
         setState(() {
@@ -192,7 +197,9 @@ class _HomePageState extends State<HomePage>
               child: Icon(
                 isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
                 key: ValueKey(isDark),
-                color: isDark ? const Color(0xFFFFD166) : const Color(0xFF6C5CE7),
+                color: isDark
+                    ? const Color(0xFFFFD166)
+                    : const Color(0xFF6C5CE7),
               ),
             ),
             onPressed: widget.onToggleTheme,
@@ -210,32 +217,31 @@ class _HomePageState extends State<HomePage>
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // 1. Search bar with lens icon
-              SearchBarWidget(
-                onSearchSubmitted: (query) {
-                  // The search function is hidden as comment per requirement.
-                  // We show a helpful SnackBar to demonstrate user interaction.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Search query "$query" received!\n(Search list feature is currently commented out as requested)',
-                      ),
-                      behavior: SnackBarBehavior.floating,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      action: SnackBarAction(
-                        label: 'OK',
-                        textColor: Colors.white,
-                        onPressed: () {},
-                      ),
-                    ),
-                  );
-                },
-                onClear: () {
-                  // Optional clear callback
-                },
-              ),
-
+              // SearchBarWidget(
+              //   onSearchSubmitted: (query) {
+              //     // The search function is hidden as comment per requirement.
+              //     // We show a helpful SnackBar to demonstrate user interaction.
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       SnackBar(
+              //         content: Text(
+              //           'Search query "$query" received!\n(Search list feature is currently commented out as requested)',
+              //         ),
+              //         behavior: SnackBarBehavior.floating,
+              //         shape: RoundedRectangleBorder(
+              //           borderRadius: BorderRadius.circular(12),
+              //         ),
+              //         action: SnackBarAction(
+              //           label: 'OK',
+              //           textColor: Colors.white,
+              //           onPressed: () {},
+              //         ),
+              //       ),
+              //     );
+              //   },
+              //   onClear: () {
+              //     // Optional clear callback
+              //   },
+              // ),
               const SizedBox(height: 18),
 
               // Quick Filter Chips (Demonstrating API query capabilities)
@@ -252,7 +258,10 @@ class _HomePageState extends State<HomePage>
                     const SizedBox(width: 8),
                     _buildFilterChip('Bleach', 'Bleach'),
                     const SizedBox(width: 8),
-                    _buildFilterChip('Demon Slayer', 'Demon Slayer: Kimetsu no Yaiba'),
+                    _buildFilterChip(
+                      'Demon Slayer',
+                      'Demon Slayer: Kimetsu no Yaiba',
+                    ),
                   ],
                 ),
               ),
@@ -263,8 +272,10 @@ class _HomePageState extends State<HomePage>
               if (_errorMessage != null)
                 Container(
                   margin: const EdgeInsets.only(bottom: 16),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.redAccent.withAlpha(25),
                     borderRadius: BorderRadius.circular(16),
@@ -272,7 +283,11 @@ class _HomePageState extends State<HomePage>
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.info_outline, color: Colors.redAccent, size: 20),
+                      const Icon(
+                        Icons.info_outline,
+                        color: Colors.redAccent,
+                        size: 20,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -292,10 +307,7 @@ class _HomePageState extends State<HomePage>
               // iii. The character who said the quote (data:character{name})
               // iv. From which anime (data:anime{name})
               if (_currentQuote != null)
-                QuoteCard(
-                  quote: _currentQuote!,
-                  isLoading: _isLoading,
-                )
+                QuoteCard(quote: _currentQuote!, isLoading: _isLoading)
               else if (_isLoading)
                 _buildLoadingPlaceholder(isDark),
 
@@ -371,8 +383,10 @@ class _HomePageState extends State<HomePage>
               // Subtle API credits badge
               Center(
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isDark
                         ? Colors.white.withAlpha(10)
@@ -431,16 +445,15 @@ class _HomePageState extends State<HomePage>
             ? Colors.white
             : (isDark ? Colors.white70 : Colors.black87),
       ),
-      backgroundColor:
-          isDark ? const Color(0xFF1E2230) : Colors.black.withAlpha(10),
+      backgroundColor: isDark
+          ? const Color(0xFF1E2230)
+          : Colors.black.withAlpha(10),
       side: BorderSide(
         color: isSelected
             ? const Color(0xFF6C5CE7)
             : (isDark ? Colors.white12 : Colors.black12),
       ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
     );
   }
 

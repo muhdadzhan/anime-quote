@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/quote_model.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Service class to interact with the Animechan API (v1).
 ///
 /// Base URL: https://api.animechan.io/v1
 /// Authentication: None
 class AnimeQuoteService {
-  static const String baseUrl = 'https://api.animechan.io/v1';
+  static String get baseUrl => dotenv.env['BASE_URL'] ?? 'https://api.animechan.io/v1';
 
   final http.Client _client;
 
@@ -27,13 +28,15 @@ class AnimeQuoteService {
       queryParameters: queryParameters.isNotEmpty ? queryParameters : null,
     );
 
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
-      },
-    ).timeout(const Duration(seconds: 12));
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
+          },
+        )
+        .timeout(const Duration(seconds: 12));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
@@ -43,7 +46,9 @@ class AnimeQuoteService {
         throw Exception('API returned unsuccessful status: ${body['status']}');
       }
     } else {
-      throw Exception('Failed to load quote. HTTP status: ${response.statusCode}');
+      throw Exception(
+        'Failed to load quote. HTTP status: ${response.statusCode}',
+      );
     }
   }
 
@@ -51,28 +56,34 @@ class AnimeQuoteService {
   ///
   /// Endpoint: GET /quotes?character={character}
   Future<List<Quote>> getQuotesByCharacter(String character) async {
-    final uri = Uri.parse('$baseUrl/quotes').replace(
-      queryParameters: {'character': character.trim()},
-    );
+    final uri = Uri.parse(
+      '$baseUrl/quotes',
+    ).replace(queryParameters: {'character': character.trim()});
 
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
-      },
-    ).timeout(const Duration(seconds: 12));
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
+          },
+        )
+        .timeout(const Duration(seconds: 12));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
       if (body['status'] == 'success' && body['data'] is List) {
         final list = body['data'] as List;
-        return list.map((item) => Quote.fromJson(item as Map<String, dynamic>)).toList();
+        return list
+            .map((item) => Quote.fromJson(item as Map<String, dynamic>))
+            .toList();
       } else {
         return [];
       }
     } else {
-      throw Exception('Failed to load quotes for character "$character" (Status: ${response.statusCode})');
+      throw Exception(
+        'Failed to load quotes for character "$character" (Status: ${response.statusCode})',
+      );
     }
   }
 
@@ -80,28 +91,34 @@ class AnimeQuoteService {
   ///
   /// Endpoint: GET /quotes?anime={anime}
   Future<List<Quote>> getQuotesByAnime(String anime) async {
-    final uri = Uri.parse('$baseUrl/quotes').replace(
-      queryParameters: {'anime': anime.trim()},
-    );
+    final uri = Uri.parse(
+      '$baseUrl/quotes',
+    ).replace(queryParameters: {'anime': anime.trim()});
 
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
-      },
-    ).timeout(const Duration(seconds: 12));
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
+          },
+        )
+        .timeout(const Duration(seconds: 12));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
       if (body['status'] == 'success' && body['data'] is List) {
         final list = body['data'] as List;
-        return list.map((item) => Quote.fromJson(item as Map<String, dynamic>)).toList();
+        return list
+            .map((item) => Quote.fromJson(item as Map<String, dynamic>))
+            .toList();
       } else {
         return [];
       }
     } else {
-      throw Exception('Failed to load quotes for anime "$anime" (Status: ${response.statusCode})');
+      throw Exception(
+        'Failed to load quotes for anime "$anime" (Status: ${response.statusCode})',
+      );
     }
   }
 
@@ -111,23 +128,27 @@ class AnimeQuoteService {
   Future<List<Quote>> searchQuotes(String query) async {
     // If user query matches character or anime, API supports ?anime= or ?character=
     // Animechan v1 /quotes returns paginated quotes.
-    final uri = Uri.parse('$baseUrl/quotes').replace(
-      queryParameters: {'query': query.trim()},
-    );
+    final uri = Uri.parse(
+      '$baseUrl/quotes',
+    ).replace(queryParameters: {'query': query.trim()});
 
-    final response = await _client.get(
-      uri,
-      headers: {
-        'Accept': 'application/json',
-        'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
-      },
-    ).timeout(const Duration(seconds: 12));
+    final response = await _client
+        .get(
+          uri,
+          headers: {
+            'Accept': 'application/json',
+            'User-Agent': 'AnimeQuotes-Flutter-App/1.0',
+          },
+        )
+        .timeout(const Duration(seconds: 12));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> body = jsonDecode(response.body);
       if (body['status'] == 'success' && body['data'] is List) {
         final list = body['data'] as List;
-        return list.map((item) => Quote.fromJson(item as Map<String, dynamic>)).toList();
+        return list
+            .map((item) => Quote.fromJson(item as Map<String, dynamic>))
+            .toList();
       }
     }
     return [];
