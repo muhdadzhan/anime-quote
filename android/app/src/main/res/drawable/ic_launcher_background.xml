@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive launcher icon background: the brand purple -> pink gradient. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <gradient
+        android:angle="315"
+        android:centerColor="#FFC944B8"
+        android:endColor="#FFFF5F6D"
+        android:startColor="#FF9B3EDB"
+        android:type="linear" />
+</shape>
