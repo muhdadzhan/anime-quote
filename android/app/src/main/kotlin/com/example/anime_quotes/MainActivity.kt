@@ -1,4 +1,4 @@
-package com.example.anime_quotes
+package com.adzhan.anime_quotes
 
 import io.flutter.embedding.android.FlutterActivity
 
